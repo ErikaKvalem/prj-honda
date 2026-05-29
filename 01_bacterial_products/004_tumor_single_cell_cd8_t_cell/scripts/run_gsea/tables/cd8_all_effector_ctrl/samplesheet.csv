@@ -1,0 +1,9 @@
+sample,sample_id,all_cd8,adata_name,condition,batch_id,total_counts_ribo,log1p_total_counts_ribo,pct_counts_ribo,total_counts_hb,log1p_total_counts_hb,pct_counts_hb,is_outlier,mt_outlier,treatment,group,psbulk_cells,psbulk_counts
+GF1_all,GF1,all,adata_GF_ICI1_plus,GF,ICI1,0,0,0,0,0,0,False,False,ICI,GF_ICI,6516,52238497
+GF2_all,GF2,all,adata_GF_ICI2_plus,GF,ICI2,0,0,0,0,0,0,False,False,ICI,GF_ICI,7887,69261510
+GF_noICI1_all,GF_noICI1,all,adata_GF_ICI1,GF,ICI1,0,0,0,0,0,0,False,False,noICI,GF_noICI,6506,48939327
+GF_noICI2_all,GF_noICI2,all,adata_GF_ICI2,GF,ICI2,0,0,0,0,0,0,False,False,noICI,GF_noICI,5540,43863680
+ctrl1_all,ctrl1,all,adata_10mix_ICI1,ctrl,ICI1,0,0,0,0,0,0,False,False,ICI,ctrl_ICI,9659,66466838
+ctrl2_all,ctrl2,all,adata_10mix_ICI2,ctrl,ICI2,0,0,0,0,0,0,False,False,ICI,ctrl_ICI,9179,60354238
+effector1_all,effector1,all,adata_11mix_ICI1,effector,ICI1,0,0,0,0,0,0,False,False,ICI,effector_ICI,8588,66560856
+effector2_all,effector2,all,adata_11mix_ICI2,effector,ICI2,0,0,0,0,0,0,False,False,ICI,effector_ICI,7935,58016292

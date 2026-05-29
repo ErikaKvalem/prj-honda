@@ -1,0 +1,18 @@
+# genes of interest
+gene_name
+Ifit1bl1
+Ifit3
+Ifit1
+Ifi47
+Ifit3b
+Cxcr3
+Hist1h1c
+Hist1h2ap
+Tcrg-V3
+Trav8-2
+Trav9-4
+Tcrg-C3
+Trav10n
+Trav7-1
+Trbj1-5
+Cd7
