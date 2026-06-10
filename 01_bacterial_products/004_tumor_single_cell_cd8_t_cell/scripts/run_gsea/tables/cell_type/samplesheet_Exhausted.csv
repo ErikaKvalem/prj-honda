@@ -1,0 +1,9 @@
+sample,sample_id,cell_annotation_05,adata_name,condition,batch_id,total_counts_ribo,log1p_total_counts_ribo,pct_counts_ribo,total_counts_hb,log1p_total_counts_hb,pct_counts_hb,rna_leiden_05,group,all_cd8,psbulk_cells,psbulk_counts
+GF1_Exhausted,GF1,Exhausted,adata_GF_ICI1_plus,GF,ICI1,0,0,0,0,0,0,4,GF,all,1079,2873225
+GF2_Exhausted,GF2,Exhausted,adata_GF_ICI2_plus,GF,ICI2,0,0,0,0,0,0,4,GF,all,848,2268187
+GF_noICI1_Exhausted,GF_noICI1,Exhausted,adata_GF_ICI1,GF,ICI1,0,0,0,0,0,0,4,GF_noici,all,1943,5184628
+GF_noICI2_Exhausted,GF_noICI2,Exhausted,adata_GF_ICI2,GF,ICI2,0,0,0,0,0,0,4,GF_noici,all,311,786063
+ctrl1_Exhausted,ctrl1,Exhausted,adata_10mix_ICI1,ctrl,ICI1,0,0,0,0,0,0,4,ctrl,all,1711,4933934
+ctrl2_Exhausted,ctrl2,Exhausted,adata_10mix_ICI2,ctrl,ICI2,0,0,0,0,0,0,4,ctrl,all,503,1377166
+effector1_Exhausted,effector1,Exhausted,adata_11mix_ICI1,effector,ICI1,0,0,0,0,0,0,4,effector,all,1203,3224058
+effector2_Exhausted,effector2,Exhausted,adata_11mix_ICI2,effector,ICI2,0,0,0,0,0,0,4,effector,all,538,1333312

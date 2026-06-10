@@ -1,0 +1,9 @@
+sample,sample_id,cell_annotation_05,adata_name,condition,batch_id,total_counts_ribo,log1p_total_counts_ribo,pct_counts_ribo,total_counts_hb,log1p_total_counts_hb,pct_counts_hb,group,all_cd8,psbulk_cells,psbulk_counts
+GF1_Activated,GF1,Activated,adata_GF_ICI1_plus,GF,ICI1,0,0,0,0,0,0,GF,all,3827,34912364
+GF2_Activated,GF2,Activated,adata_GF_ICI2_plus,GF,ICI2,0,0,0,0,0,0,GF,all,4761,47765062
+GF_noICI1_Activated,GF_noICI1,Activated,adata_GF_ICI1,GF,ICI1,0,0,0,0,0,0,GF_noici,all,3849,31351031
+GF_noICI2_Activated,GF_noICI2,Activated,adata_GF_ICI2,GF,ICI2,0,0,0,0,0,0,GF_noici,all,2372,24271144
+ctrl1_Activated,ctrl1,Activated,adata_10mix_ICI1,ctrl,ICI1,0,0,0,0,0,0,ctrl,all,6562,47835718
+ctrl2_Activated,ctrl2,Activated,adata_10mix_ICI2,ctrl,ICI2,0,0,0,0,0,0,ctrl,all,4435,37614390
+effector1_Activated,effector1,Activated,adata_11mix_ICI1,effector,ICI1,0,0,0,0,0,0,effector,all,5380,47711245
+effector2_Activated,effector2,Activated,adata_11mix_ICI2,effector,ICI2,0,0,0,0,0,0,effector,all,3173,30365286

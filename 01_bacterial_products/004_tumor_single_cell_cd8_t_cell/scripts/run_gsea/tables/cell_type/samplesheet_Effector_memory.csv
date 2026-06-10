@@ -1,0 +1,9 @@
+sample,sample_id,cell_annotation_05,adata_name,condition,batch_id,total_counts_ribo,log1p_total_counts_ribo,pct_counts_ribo,total_counts_hb,log1p_total_counts_hb,pct_counts_hb,rna_leiden_05,group,all_cd8,psbulk_cells,psbulk_counts
+GF1_Effector_memory,GF1,Effector_memory,adata_GF_ICI1_plus,GF,ICI1,0,0,0,0,0,0,2,GF,all,1402,9249918
+GF2_Effector_memory,GF2,Effector_memory,adata_GF_ICI2_plus,GF,ICI2,0,0,0,0,0,0,2,GF,all,1360,9685216
+GF_noICI1_Effector_memory,GF_noICI1,Effector_memory,adata_GF_ICI1,GF,ICI1,0,0,0,0,0,0,2,GF_noici,all,741,5071861
+GF_noICI2_Effector_memory,GF_noICI2,Effector_memory,adata_GF_ICI2,GF,ICI2,0,0,0,0,0,0,2,GF_noici,all,605,4419837
+ctrl1_Effector_memory,ctrl1,Effector_memory,adata_10mix_ICI1,ctrl,ICI1,0,0,0,0,0,0,2,ctrl,all,1092,7522055
+ctrl2_Effector_memory,ctrl2,Effector_memory,adata_10mix_ICI2,ctrl,ICI2,0,0,0,0,0,0,2,ctrl,all,699,4812806
+effector1_Effector_memory,effector1,Effector_memory,adata_11mix_ICI1,effector,ICI1,0,0,0,0,0,0,2,effector,all,1521,10044840
+effector2_Effector_memory,effector2,Effector_memory,adata_11mix_ICI2,effector,ICI2,0,0,0,0,0,0,2,effector,all,1720,10443912
