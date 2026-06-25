@@ -1,0 +1,47 @@
+# Docker image to start from
+image: continuumio/miniconda3:latest
+
+# Install additional dependencies
+# procps-ng is required for nextflow to generate process statistics.
+before_script:
+  - apt-get update
+  - conda update -n base -c defaults conda
+  # - conda install -y mamba -n base -c conda-forge
+  # - mamba env update --file env.yml
+  - conda env update --file env.yml
+  - source activate deseq2icbi
+  - R -e "install.packages('BiocManager', repos = 'https://mirrors.nic.cz/R/'); library('BiocManager'); BiocManager::install('rtracklayer'); BiocManager::install('clusterProfiler'); install.packages('grateful', repos = 'https://cloud.r-project.org/')"
+
+# Execute some commands (e.g. `pytest` to execute python unit-tests,
+# or run a nextflow pipeline)
+test:
+  stage: test
+  script:
+    - mkdir out
+    - |
+        ./runDESeq2_ICBI.R testdata/example1/sampleTableN.csv testdata/example1/merged_gene_counts.txt  --result_dir=out \
+        --sample_col=sample --condition_col=overexpression \
+        --c1=PFKFB3_S461E --c2=MOCK \
+        --n_cpus=4 \
+        --genes_of_interest=testdata/example_nfcore/GoI.txt \
+        --gtf_file=testdata/example1/gencode_subset.gtf \
+        --organism=human
+    - |
+        ./runDESeq2_ICBI.R testdata/example1/sampleTableN.csv testdata/example1/merged_gene_counts.txt  --result_dir=out \
+        --sample_col=sample --condition_col=overexpression \
+        --c1=PFKFB3_S461E --c2=MOCK \
+        --n_cpus=4 \
+        --paired_grp=treatment \
+        --covariate_formula="+numeric_covariate" \
+        --genes_of_interest=testdata/example_nfcore/GoI.txt \
+        --gtf_file=testdata/example1/gencode_subset.gtf \
+        --organism=human
+    - |
+        ./runDESeq2_ICBI.R testdata/example_nfcore/rnaseq_samplesheet_nfcore-3.1.csv testdata/example_nfcore/salmon.merged.gene_counts.subset.tsv --result_dir=out \
+        --sample_col=sample --nfcore \
+        --c1=grpA --c2=grpB \
+        --n_cpus=4 \
+        --genes_of_interest=testdata/example_nfcore/GoI.txt \
+        --organism=human
+
+

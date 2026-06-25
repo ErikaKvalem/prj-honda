@@ -1,0 +1,281 @@
+% !TEX root = report_template.tex
+\documentclass{article}
+\setlength{\parskip}{1ex}
+\title{ DESeq2 Report: {{comparison_clean}} }
+\author{ICBI}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{geometry}
+\usepackage{helvet}
+\usepackage{natbib}
+\usepackage{placeins}
+\usepackage{booktabs}
+\usepackage{amsmath} % for better handling of underscores in words
+\renewcommand{\familydefault}{\sfdefault}
+\geometry{margin=1in}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+This report summarizes the results of the comprehensive analysis of RNA-seq data,
+encompassing differential expression analysis, quality control visualization, and functional
+enrichment analysis.
+
+\section*{Methods}
+\begin{longtable}{ll}
+    \hline
+    Category & Details \\
+    \hline
+    Comparison & {{comparison_clean}} \\
+    Paired Analysis & {{#paired}} {{paired}} {{/paired}} {{^paired}} No {{/paired}} \\
+    Covariates & {{#covariates}} {{covariates}} {{/covariates}} {{^covariates}} None {{/covariates}} \\
+    Batch Effects Considered & {{batchEffects}} \\
+    Batch & {{batch_col}} \\
+    \hline
+\end{longtable}
+
+\section*{Result File Descriptions}
+\begin{itemize}
+    \item \textbf{`raw\_counts.tsv`}: Contains the raw gene count table across all samples.
+    \item \textbf{`all\_samples\_PCA.png`}: A PCA plot displaying all samples to provide an overview of sample distribution.
+    \item \textit{multiqc\_report.html}: HTML report from MultiQC summarizing data quality across samples.
+    \item \textbf{Feature and Gene Detection Files}:
+    \begin{itemize}
+        {{#has_deg}}
+        \item \textbf{`\textasteriskcentered{}\_biotype\_counts.png` \& `\_biotype\_counts.tsv`}: Lists and visualizations of the most differentially expressed genomic features by type (e.g., protein-coding).
+        {{/has_deg}}
+        \item \textbf{`\textasteriskcentered{}\_number\_of\_detected\_genes.png (tsv)`}: Bar plot of the number of detected genes (min 10 reads) per sample.
+        \item \textbf{`\textasteriskcentered{}\_detectedGenesNormalizedCounts\_min\_10\_reads\_in\_one\_condition.tsv`}: Contains normalized counts of genes detected with at least 10 reads in one condition.
+        \item \textbf{`\textasteriskcentered{}\_detectedGenesRawCounts\_min\_10\_reads\_in\_one\_condition.tsv`}: Contains raw counts of genes detected with at least 10 reads in one condition.
+    \end{itemize}
+    {{#has_deg}}
+    \item \textbf{Differential Expression Analysis}:
+    \begin{itemize}
+        \item \textbf{`\textasteriskcentered{}\_IHWsigFCgenes\_2\_fold.xlsx (tsv)`}: Significant differentially expressed genes with fold change \textgreater 2 and FDR \textless 0.1.
+        \item \textbf{`\textasteriskcentered{}\_IHWsigGenes.xlsx (tsv)`}: Significant differentially expressed genes with FDR \textless 0.1 (no fold change cutoff).
+        \item \textbf{`\textasteriskcentered{}\_IHWallGenes.xlsx (tsv)`}: All genes in each comparison with no filters applied.
+    \end{itemize}
+    {{/has_deg}}
+    \item \textbf{Visualization Files}:
+    \begin{itemize}
+       {{#has_deg}}
+        \item \textbf{`\textasteriskcentered{}\_volcano\_padj.png`}: Volcano plot showing gene expression differences between conditions, with selected genes highlighted.
+        {{/has_deg}}
+        \item \textbf{`\textasteriskcentered{}\_PCA.png`}: PCA plot to visualize clustering by condition.
+    \end{itemize}
+    {{#has_deg}}
+    \item \textbf{Gene Set Enrichment Analysis (GSEA) and Overrepresentation Analysis (ORA)}:
+    \begin{itemize}
+        \item \textbf{GSEA and ORA Dot Plots}: Visualization files and analysis results for gene-set enrichment and overrepresentation analysis, including GO terms (BP, MF, CC), KEGG pathways, Reactome pathways, and WikiPathways.
+        \item \textbf{GSEA*.tsv and ORA*.tsv}: Table files containing results for each gene set.
+        \item \textbf{Top GO Analysis}:
+        \textbf{topGO\_IHWsig*.xlsx (tsv)}: Lists the statistically overrepresented GO terms in the categories Biological Process (BP), Molecular Function (MF), Cellular Component (CC).
+    \end{itemize}
+    {{/has_deg}}
+
+\end{itemize}
+
+\pagebreak
+\section*{Differential Gene Expression with DESeq2}
+
+DESeq2 is an R package for identifying differentially expressed genes from RNA-seq data.
+It models count data with the negative binomial distribution, normalizes for library size differences,
+and uses generalized linear models to test for significant changes between groups.
+
+Coupled with Independent Hypothesis Weighting (IHW), DESeq2 improves statistical power while controlling
+the false discovery rate by weighting genes based on independent covariates like their average expression level.
+This combination provides a robust and widely-used method for differential gene expression analysis.
+
+The output of DESeq2 includes log2 fold changes, shrunk log2 fold changes, p-values, and adjusted p-values for each gene, allowing
+to identify and prioritize genes with significant expression differences between conditions.
+
+\textbf{Important Considerations on Log2 fold change shrinkage}:
+
+Log2 fold change shrinkage is a post-processing step in differential expression analysis that improves the accuracy and interpretability
+of results by borrowing information across genes to refine individual estimates. It's particularly important for genes with low counts
+or high variability, leading to more reliable visualizations and gene rankings.
+
+\begin{itemize}
+  \item Noise in Lowly Expressed Genes: Genes with low read counts are more susceptible to noise and variability. This can lead to inflated and unreliable log2 fold change estimates.
+  \item Shrunk log2 fold changes (log2FoldChange\_shrink) are generally preferred for visualization and ranking genes, as they are more stable, especially for genes with low counts.
+  \item The un-shrunk fold change is still important because it is used for the test statistic calculation.
+  \item The adjusted p-value (padj) is crucial for determining which genes are considered significantly differentially expressed.
+  \item log2FoldChange\_shrink is not used for the test statistic.
+  \item Impact on Interpretation: Inflated log2 fold changes for lowly expressed genes can be misleading, making them appear more important than they actually are. This affects
+  downstream analyses like ranking genes for further investigation or creating visualizations like MA-plots and volcano plots.
+\end{itemize}
+
+{{#has_deg}}
+
+\begin{table}[h!]
+  \centering
+  \small % Reduce font size for the entire table
+  \caption{Description of columns in a DESeq2 output file: {{comparison_clean}} }
+  \label{tab:deseq2_output}
+  \begin{tabular}{|p{0.25\linewidth}|p{0.68\linewidth}|}
+  \toprule
+  \textbf{Column Name} & \textbf{Description} \\
+  \midrule
+  \textbf{gene\_id} & The unique identifier for the gene (Ensembl ID) \\
+  \textbf{baseMean} & The average normalized read count across all samples, after normalization by library size factors. \\
+  \textbf{log2FoldChange} & The estimated log2 fold change between the two conditions being compared. A positive value indicates higher expression in the first condition. \textbf{This is the unshrunk version.} \\
+  \textbf{lfcSE} & The standard error associated with the \textbf{unshrunk} \texttt{log2FoldChange} estimate. \\
+  \textbf{stat} & The Wald statistic, calculated as \texttt{log2FoldChange} / \texttt{lfcSE}. \\
+  \textbf{pvalue} & The raw p-value resulting from the Wald test, representing the statistical significance of the observed fold change. \\
+  \textbf{padj} & The p-value adjusted for multiple testing (IHW), controlling the false discovery rate (FDR). \\
+  \textbf{log2FoldChange\_shrink} & The \textbf{shrunk} log2 fold change. This value is shrunk towards zero from the original \texttt{log2FoldChange}, especially for genes with low counts or high dispersion. \texttt{normal} or \texttt{apeglm} shrinkage can be applied. \\
+  \textbf{lfcSE\_shrink} & The standard error associated with the \textbf{shrunk} \texttt{log2FoldChange\_shrink} estimate. \\
+  \textbf{gene\_name} & The official gene symbol \\
+  \textbf{genes\_description} & A description of the gene function, if available and added from an annotation database. \\
+  \textbf{gene\_type} & Biotype \\
+  \bottomrule
+  \end{tabular}
+\end{table}
+
+{{/has_deg}}
+
+
+\FloatBarrier
+
+\subsection*{DGE plots}
+{{#pca_plots}}
+    {{#.}}
+    \begin{figure}[htbp]
+        \centering
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            {\includegraphics[width=\textwidth]{ {{image_path}} }}
+            \caption{ {{caption}} }
+        \end{minipage}
+        {{#has_pair}}
+        \hspace{0.01\textwidth}
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            {\includegraphics[width=\textwidth]{ {{pair_path}} }}
+            \caption{ {{pair_caption}} }
+        \end{minipage}
+        {{/has_pair}}
+    \end{figure}
+    {{/.}}
+{{/pca_plots}}
+
+{{#no_deg}}
+    \textbf NO differntially expressed genes found when comparing {{comparison_clean}} 
+{{/no_deg}}
+
+{{#has_deg}}
+
+{{#expr_plots}}
+    {{#.}}
+    \begin{figure}[htbp]
+        \centering
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            {\includegraphics[width=\textwidth]{ {{image_path}} }}
+            \caption{ {{caption}} }
+        \end{minipage}
+        {{#has_pair}}
+        \hspace{0.01\textwidth}
+        \begin{minipage}[t]{0.48\textwidth}
+            \centering
+            {\includegraphics[width=\textwidth]{ {{pair_path}} }}
+            \caption{ {{pair_caption}} }
+        \end{minipage}
+        {{/has_pair}}
+    \end{figure}
+    {{/.}}
+{{/expr_plots}}
+
+\FloatBarrier
+\pagebreak
+\section*{Functional Enrichment Analysis: ORA \/ GSEA}
+
+The over-representation test (ORA) takes the list of deferentially expressed genes (as defined by the FDR- and fold-change cutoff)
+and checks if it contains more genes from a certain gene-set (e.g. GO-term, KEGG pathway) than would be expected
+by random chance.
+
+Gene-set-enrichment-analysis (GSEA) ranks genes from most upregulated to most downregulated, and checks if genes from a certain gene-set
+tend to be more at the top, or more at the bottom of this list.
+
+The ORA test results are straightforward to interpret and, in most cases, the preferred flavor of gene-set analysis.
+GSEA is superior when very few genes are differentially expressed, as it also takes into account more subtle,
+but coordinated gene expression changes that are statistically significant only when regarding the gene set as a whole,
+but not on the level of single genes.
+
+
+\subsection*{Over-Representation Analysis (ORA)}
+
+ORA was performed using clusterProfiler and topGO packages to identify over-represented pathways and Gene Ontology (GO) terms
+among the significantly differentially expressed genes.
+
+\textbf{Gene Set and Pathway tested for enrichment:}
+
+\begin{itemize}
+  \item KEGG pathways
+  \item Reactome pathways
+  \item WikiPathways
+  \item GO terms:
+  \begin{itemize}
+    \item BP: Biological Process
+    \item MF: Molecular Function
+    \item CC: Cellular Component
+  \end{itemize}
+\end{itemize}
+
+\FloatBarrier
+\subsection*{ORA plots of the top 30 significantly overrepresented gene sets}
+{{#figures_ORA}}
+    {{#path}}
+    \begin{figure}[htbp]
+        \centering
+        \hspace*{-3cm}
+        {\includegraphics[width=\textwidth]{ {{path}} }}
+        \caption{ {{caption}} }
+    \end{figure}
+    {{/path}}
+{{/figures_ORA}}
+
+\FloatBarrier
+\subsection*{Gene Set Enrichment Analysis (GSEA)}
+
+GSEA was performed using clusterProfiler to assess whether pre-defined gene sets (e.g., pathways) are enriched at the top or bottom
+of a ranked list of genes, where the ranking is based on the differential expression test statistic.
+
+\textbf{Gene Set and Pathway tested for enrichment:}
+
+\begin{itemize}
+  \item KEGG pathways
+  \item Reactome pathways
+  \item WikiPathways
+  \item GO terms:
+  \begin{itemize}
+    \item BP: Biological Process
+    \item MF: Molecular Function
+    \item CC: Cellular Component
+  \end{itemize}
+\end{itemize}
+
+\FloatBarrier
+\subsection*{GSEA plots of the top 30 significantly enriched gene sets}
+{{#figures_GSEA}}
+    {{#path}}
+    \begin{figure}[htbp]
+        \centering
+        \hspace*{-3cm}
+        {\includegraphics[width=\textwidth]{ {{path}} }}
+        \caption{ {{caption}} }
+    \end{figure}
+    {{/path}}
+{{/figures_GSEA}}
+
+{{/has_deg}}
+
+
+\FloatBarrier
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{ {{bib_file}} }
+
+\end{document}
