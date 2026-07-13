@@ -1,0 +1,395 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f8f8e106-ac22-42d2-b3ce-82f84c8b18e1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import scvelo as scv\n",
+    "import scanpy as sc\n",
+    "from multiprocessing import Pool\n",
+    "import anndata as ad\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "from matplotlib import rcParams"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8fff9ee4-da7b-4d60-9515-6d35cee97222",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import mudata as mu"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2ea8259b-9b9d-4aa4-9bbd-42c525ad76e0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import scanpy as sc\n",
+    "\n",
+    "scv.settings.figdir = \"/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/results/prj_honda_15062026/publication_figures/healthy\"\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2cb99620-369e-4b1b-b2c3-f308d61df9fe",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata = ad.read_h5ad(\"/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/results/40_gex_surface_prot/single_cell_normal/002_annotate_adata_normal.h5ad\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "377a8246-e06c-4057-b24c-6ef4c2754b0d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata = adata[~adata.obs_names.duplicated(), :]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4e07236b-8920-43e0-96ca-8b6276c40e25",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "343f5b3e-1621-4217-8027-dc124e1bc6a2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "import glob\n",
+    "import scvelo as scv\n",
+    "import scanpy as sc\n",
+    "\n",
+    "def read_scvelo_2019_looms():\n",
+    "    loom_dir = \"/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/results/trajectory_inference/loom\"\n",
+    "    \n",
+    "    # find all loom files starting with 2021\n",
+    "    loom_files = sorted(\n",
+    "        glob.glob(os.path.join(loom_dir, \"2019*.loom\"))\n",
+    "    )\n",
+    "    \n",
+    "    print(f\"Found {len(loom_files)} loom files.\")\n",
+    "    \n",
+    "    adatas = []\n",
+    "    \n",
+    "    for file in loom_files:\n",
+    "        print(f\"Reading {os.path.basename(file)}\")\n",
+    "        \n",
+    "        adata = scv.read_loom(file)\n",
+    "        adata.var_names_make_unique()\n",
+    "        \n",
+    "        # store filename (without extension) as metadata\n",
+    "        sample_name = os.path.basename(file).replace(\".loom\", \"\")\n",
+    "        adata.obs[\"sample_id\"] = sample_name\n",
+    "        \n",
+    "        adatas.append(adata)\n",
+    "    \n",
+    "    # concatenate all\n",
+    "    adata_combined = sc.concat(adatas, join=\"outer\", label=\"batch\", keys=[a.obs[\"sample_id\"][0] for a in adatas])\n",
+    "    \n",
+    "    return adata_combined\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e6e9a645-7111-4413-a2ab-7fdc012eb5e1",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_velocity = read_scvelo_2019_looms()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4c1b6da4-344e-4643-bb0b-0d298fc3733b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_scvelo = adata_velocity"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "183f743b-4bdf-4eb3-ac5e-fd90f9051464",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_scvelo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f0ba2e7a-0cf1-406e-87bc-db22cbada999",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata.obs_names"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7fad7e12-58d3-4f42-a0bd-58323ae6c045",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import re\n",
+    "\n",
+    "# Step 1: extract clean barcode\n",
+    "barcodes = (\n",
+    "    adata_scvelo.obs_names\n",
+    "    .str.split(\":\").str[1]      # take part after :\n",
+    "    .str.replace(\"x\", \"\", regex=False)  # remove trailing x\n",
+    ")\n",
+    "\n",
+    "# Step 2: clean sample names\n",
+    "samples = (\n",
+    "    adata_scvelo.obs[\"sample_id\"]\n",
+    "    .str.replace(\"2019_\", \"\", regex=False)\n",
+    ")\n",
+    "\n",
+    "# Step 3: build matching obs_names\n",
+    "new_names = samples + \"_\" + barcodes + \"-1\"\n",
+    "\n",
+    "adata_scvelo.obs_names = new_names\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c32405d8-1a19-41a7-9092-844e921adffb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_scvelo.obs"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8f687fd1-4cb4-441a-b634-cfd74d068db9",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata.obs_names"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "14c1ad7b-f236-4973-9a66-a7e0019c3fd8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "len(set(adata.obs_names)), len(set(adata_scvelo.obs_names)), len(\n",
+    "    set(adata.obs_names) & set(adata_scvelo.obs_names)\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1dc82e5b-718b-4c85-b53f-612c62bdde5f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_scvelo = scv.utils.merge(adata_scvelo, adata)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6a4eb687-de5b-4323-a192-543caeb10444",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scv.pp.filter_and_normalize(adata_scvelo)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "ed8c5e82-33c0-4da3-b7d4-84819d69de1e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scv.pp.moments(adata_scvelo, n_pcs=30, n_neighbors=30)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1b536548-407f-4226-b7e2-e11e41b1bf29",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scv.tl.velocity(adata_scvelo)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "882601ef-49d6-49a1-84c9-9035292fbbc7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scv.tl.velocity_graph(adata_scvelo)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "918dc2f0-18f1-4187-85b6-439fd2987cc7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata_scvelo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d3159766-4ccd-438a-8571-84d495a65cd6",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scv.pl.proportions(adata_scvelo, groupby=\"sample_id\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "06462c5f-80d8-46ad-ac4a-448ccf5027f7",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sc.set_figure_params(figsize=(10, 10))\n",
+    "rcParams[\"axes.grid\"] = False\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7027fc89-70b9-4cb5-a67a-58f75c3633fd",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "adata"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7c837268-de60-4b15-aaa5-a76832e427e8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ax = sc.pl.embedding(\n",
+    "    adata,\n",
+    "    basis=\"X_umap\",\n",
+    "    color=\"rna_leiden_12\",\n",
+    "    show=False,\n",
+    "    legend_loc=\"None\",\n",
+    "    size=45,\n",
+    "    alpha=0.3,frameon=False\n",
+    ")\n",
+    "\n",
+    "scv.pl.velocity_embedding_stream(\n",
+    "    adata_scvelo,\n",
+    "    basis=\"X_umap\",\n",
+    "    color=\"rna_leiden_12\",arrow_size=2,linewidth=2,\n",
+    "    #     arrow_color=\"white\",\n",
+    "    legend_loc=\"right margin\",\n",
+    "    ax=ax,\n",
+    "    alpha=0, save = \"velocity_normal_rna_leiden_12.png\"\n",
+    "    #save = \"velocity_normal_rna_leiden_12.svg\"\n",
+    ")\n",
+    "\n",
+    "ax.get_figure()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a65ff1e2-6f8e-4698-b855-f59d7d9c2622",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ax = sc.pl.embedding(\n",
+    "    adata,\n",
+    "    basis=\"X_umap\",\n",
+    "    color=\"cell_annotation_05\",\n",
+    "    show=False,\n",
+    "    legend_loc=\"None\",\n",
+    "    size=45,\n",
+    "    alpha=0.3,frameon=False\n",
+    ")\n",
+    "\n",
+    "scv.pl.velocity_embedding_stream(\n",
+    "    adata_scvelo,\n",
+    "    basis=\"X_umap\",\n",
+    "    color=\"cell_annotation_05\",arrow_size=2,linewidth=2,\n",
+    "    #     arrow_color=\"white\",\n",
+    "    legend_loc=\"right margin\",\n",
+    "    ax=ax,\n",
+    "    alpha=0, save =\"velocity_normal.png\" #save = \"velocity_normal.svg\"\n",
+    ")\n",
+    "\n",
+    "ax.get_figure()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "374a9ef0-90b2-468d-927d-c49d04bc6acc",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "scvelo_03_2024",
+   "language": "python",
+   "name": "scvelo_03_2024"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
