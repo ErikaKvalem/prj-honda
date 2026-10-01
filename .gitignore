@@ -1,0 +1,8 @@
+# Jupyter Notebook checkpoints (matches all checkpoint folders anywhere in the repo)
+.ipynb_checkpoints/
+
+# Data directories (matches any 'data' directory at root or inside subprojects)
+data/
+
+# Generated figures
+figures/
