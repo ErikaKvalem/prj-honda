@@ -1,0 +1,10 @@
+[gene-expression],,,
+ref,/data/databases/CellRanger/refdata-gex-mm10-2020-A,,
+,,,
+[vdj],,,
+ref,/data/databases/CellRanger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0,,
+,,,
+[libraries],,,
+fastq_id,fastqs,lanes,feature_types
+GF2-GEX,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2019-10-29_sorted_cd8/00_RAW/,1,Gene Expression
+GF2-TCR,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2019-10-29_sorted_cd8/00_RAW/,1,VDJ-T

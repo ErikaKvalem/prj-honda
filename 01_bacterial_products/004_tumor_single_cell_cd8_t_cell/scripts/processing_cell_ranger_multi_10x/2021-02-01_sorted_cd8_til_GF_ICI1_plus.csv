@@ -1,0 +1,23 @@
+[gene-expression],,,
+ref,/data/databases/CellRanger/refdata-gex-mm10-2020-A,,
+,,,
+[feature],,,
+ref,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/feature_reference/feature_ref_60-480407864-ICI1.csv
+,,,
+[vdj],,,
+ref,/data/databases/CellRanger/refdata-cellranger-vdj-GRCm38-alts-ensembl-7.0.0,,
+,,,
+[libraries],,,
+fastq_id,fastqs,lanes,feature_types
+GF-ICI1-plus-GEX-1,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Gene Expression
+GF-ICI1-plus-GEX-2,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Gene Expression
+GF-ICI1-plus-GEX-3,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Gene Expression
+GF-ICI1-plus-GEX-4,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Gene Expression
+GF-ICI1-plus-TCR-1,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,VDJ-T
+GF-ICI1-plus-TCR-2,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,VDJ-T
+GF-ICI1-plus-TCR-3,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,VDJ-T
+GF-ICI1-plus-TCR-4,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,VDJ-T
+GF-ICI1-plus-CSP-1,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Antibody Capture
+GF-ICI1-plus-CSP-2,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Antibody Capture
+GF-ICI1-plus-CSP-3,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Antibody Capture
+GF-ICI1-plus-CSP-4,/data/projects/2021/MicrobialMetabolites/single-cell-sorted-cd8/2021-02-01_sorted_cd8_til/00_raw_rename,3,Antibody Capture

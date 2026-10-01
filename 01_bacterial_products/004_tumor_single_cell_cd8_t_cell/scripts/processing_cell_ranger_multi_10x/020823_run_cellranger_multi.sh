@@ -1,0 +1,8 @@
+qsub s10mix_ICI1_cellranger_multi.sge
+qsub s10mix_ICI2_cellranger_multi.sge
+qsub s11mix_ICI1_cellranger_multi.sge
+qsub s11mix_ICI2_cellranger_multi.sge
+qsub GF_ICI1_cellranger_multi.sge
+qsub GF_ICI2_cellranger_multi.sge
+qsub GF_ICI1_plus_cellranger_multi.sge
+qsub GF_ICI2_plus_cellranger_multi.sge
